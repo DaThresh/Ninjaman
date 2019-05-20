@@ -1,0 +1,147 @@
+<html>
+<head>
+	<title>NinjaMan</title>
+	<style type="text/css">
+		*{
+			margin:0;
+			padding:0;
+		}
+		.row{
+			line-height: 0; 
+		}
+		.wall{
+			background-color: blue;
+			height: 40px;
+			width: 40px;
+			display:inline-block;
+		}
+		.sushi{
+			background-color: black;
+			height: 40px;
+			width: 40px;
+			display:inline-block;
+			background-image:url('img/sushi.png');
+			background-size: contain;
+		}
+		.onigiri{
+			background-color: black;
+			height: 40px;
+			width: 40px;
+			display:inline-block;
+			background-image:url('img/onigiri.png');
+			background-size: contain;
+		}
+		.blank{
+			background-color: black;
+			height: 40px;
+			width: 40px;
+			display:inline-block;
+		}
+		#ninjaman{
+			background-color: black;
+			height: 40px;
+			width: 40px;
+			display:inline-block;
+			background-image:url('img/ninja.gif');
+			background-size: contain;
+			position: absolute;
+			left: 40px;
+			top: 40px;
+		}
+		#scoreboard{
+			height: 40px;
+			font-size: 2em;
+			position: absolute;
+		}
+	</style>
+</head>
+
+<body>
+
+	<div id='world'></div>
+	<div id="ninjaman"></div>
+	<div id="scoreboard"></div>
+
+		<script>
+			var world = [
+				[1,1,1,1,1],
+				[0,0,2,2,1],
+				[1,3,2,2,1],
+				[1,3,1,2,1],
+				[1,1,1,1,1]
+			];
+
+			var worldDict = {
+				0: 'blank',
+				1: 'wall',
+				2: 'sushi',
+				3: 'onigiri'
+			};
+
+			var ninjaPos = {
+				'top': 1,
+				'left': 1
+			}; // TOP (ROW) POS, LEFT POS
+
+			var output = '';
+			var score = 0;
+
+			function drawWorld(){
+				for (var row = 0; row < world.length; row++){
+					output += '<div class="row">';
+					for (var element = 0; element < world[row].length; element++){
+						output += '<div class="' + worldDict[world[row][element]] + '"></div>';
+					}
+					output += '</div>';
+				}
+				document.getElementById('world').innerHTML = output;
+				output = '';
+			}
+
+			document.onkeydown = function(e){
+				if(e.keyCode == 37 && ninjaPos['left'] > 0){  // LEFT
+					if (world[ninjaPos['top']][ninjaPos['left'] - 1] != 1){
+						ninjaPos['left'] -= 1;
+					}
+				} else if (e.keyCode == 39 && ninjaPos['left'] < world[0].length - 1){  // RIGHT
+					if (world[ninjaPos['top']][ninjaPos['left'] + 1] != 1){
+						ninjaPos['left'] += 1;
+					}
+				}  else if (e.keyCode == 40 && ninjaPos['top'] < world.length){  // DOWN
+					if (world[ninjaPos['top'] + 1][ninjaPos['left']] != 1){
+						ninjaPos['top'] += 1;
+					}
+				} else if (e.keyCode == 38 && ninjaPos['top'] > 0){  // UP
+					if(world[ninjaPos['top'] - 1][ninjaPos['left']] != 1){
+						ninjaPos['top'] -= 1;
+					}
+				}
+				updatePlayer();
+			}
+
+			function updatePlayer(){
+				document.getElementById('ninjaman').style.top = ninjaPos['top'] * 40;
+				document.getElementById('ninjaman').style.left = ninjaPos['left'] * 40;
+				if (world[ninjaPos['top']][ninjaPos['left']] != 0){
+					if (world[ninjaPos['top']][ninjaPos['left']] == 2){
+						score += 10;
+					} else if ( world[ninjaPos['top']][ninjaPos['left']] == 3){
+						score += 5;
+					}
+					world[ninjaPos['top']][ninjaPos['left']] = 0;
+					drawWorld();
+					updateScore();
+				}
+			}
+
+			function updateScore(){
+				document.getElementById('scoreboard').innerHTML = score + ' points';
+			}
+
+			drawWorld();
+			updateScore();
+
+		</script>
+
+</body>
+</html> 
